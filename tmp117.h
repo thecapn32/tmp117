@@ -1,7 +1,19 @@
 #ifndef TMP117_H_
 #define TMP117_H_
 
-struct tmp117 {
+#define ENO_TMP117_NORESPONSE      -1
+
+#define EVENT_TMP117_LOWALERT  0
+#define EVENT_TMP117_HIGHALERT 1
+
+#define TMP117_OK 0
+#define TMP117_DATA_UNAVAILABLE 1
+
+typedef int (*tmp117_communicate) (unsigned char *data,
+        unsigned char *response);
+
+
+struct tmp117_config {
     int address;
     int conversion_mode;
     int conversion_cycle;
@@ -9,36 +21,24 @@ struct tmp117 {
     int alert_gpio_num;
     int alert_gpio_polarity;
     int alert_gpio_mode;
+    tmp117_communicate communicate;
 };
 
 
+int
+tmp117_init(struct tmp117_config *tmp117);
+
+
 /* we need to pass opaque pointers to function */
-
-static int
-tmp117_get_alert() {
-    return EVENT_TMP117_HIGHALERT;
-    return EVENT_TMP117_LOWALERT;
-}
+int
+tmp117_get_alert(struct tmp117_config *state);
 
 
-static int
-tmp117_read_temprature(double *temp) {
-    /* first read the data ready value */
-    return ENO_TMP117_DATAUNAVAILABLE;
-    return 0;
-}
+int
+tmp117_read_temprature(double *temp);
+
 
 /* this function will make alert pin act as data ready */
-static int
-tmp117_enable_alert(struct tmp117 *state) {
-    /* here we need to enable interrupt alert pin */
-    /* consider the polarity and enable interrupt */
-    return 0;
-}
-
-static int
-tmp117_set_gpio_polarity(struct tmp117 *state) {
-    /* assemble the packet and call the sending function */
-}
-
+int
+tmp117_enable_alert(struct tmp117_config *state);
 #endif
